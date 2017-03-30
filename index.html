@@ -4,6 +4,205 @@
 	<head>
 	    <meta charset="utf-8">
 	    <title>CloudTrailLog Parser</title>
+	    <!-- jQuery -->
+	    <script src="js/jquery-latest.min.js"></script>
+	    <script src="js/jquery-ui.min.js"></script>
+
+	    <!-- Demo stuff -->
+	    <link rel="stylesheet" href="css/jq.css">
+	    <link href="css/prettify.css" rel="stylesheet">
+	    <link rel="stylesheet" href="css/magnific-popup.css">
+	    <link rel="stylesheet" href="css/jquery-ui.min.css">
+	    <script src="js/prettify.js"></script>
+	    <script src="js/docs.js"></script>
+	    <script src="js/jquery.magnific-popup.min.js"></script>
+
+	    <!-- Tablesorter: theme -->
+	    <link class="theme default" rel="stylesheet" href="css/theme.default.css">
+	    <link class="theme blue" rel="stylesheet" href="css/theme.blue.css">
+	    <link class="theme green" rel="stylesheet" href="css/theme.green.css">
+	    <link class="theme grey" rel="stylesheet" href="css/theme.grey.css">
+	    <link class="theme ice" rel="stylesheet" href="css/theme.ice.css">
+	    <link class="theme black-ice" rel="stylesheet" href="css/theme.black-ice.css">
+	    <link class="theme dark" rel="stylesheet" href="css/theme.dark.css">
+	    <link class="theme dropbox" rel="stylesheet" href="css/theme.dropbox.css">
+	    <link class="theme metro-dark" rel="stylesheet" href="css/theme.metro-dark.css">
+
+	    <style id="css">/* wrapper of table 2 */
+	.wrapper {
+	    position: relative;
+	    padding: 0 5px;
+	    height: 250px;
+	    overflow-y: auto;
+	}
+
+	/* Magnific popup */
+	#popup {
+	    position: relative;
+	    background: #FFF;
+	    padding: 20px;
+	    width: auto;
+	    max-width: 500px;
+	    margin: 20px auto;
+	}
+	/* Since the popup has a 20px margin, we need to adjust the wrapper position
+	Note:
+	 this is only required because we aren't actually attaching the sticky header
+	 to the #popup, instead we're attaching it to the .mfp-wrap because that
+	 element scrolls instead of the window
+	*/
+	#popup .tablesorter-sticky-wrapper {
+	    margin-left: 20px;
+	    margin-top: -20px;
+	}</style>
+
+	    <!-- Tablesorter script: required -->
+	    <script src="js/jquery.tablesorter.js"></script>
+	    <script src="js/widget-filter.js"></script>
+	    <script src="js/widget-stickyHeaders.js"></script>
+
+	    <script id="js">$(function(){
+
+	    $('.open-popup-link').magnificPopup({
+	        type: 'inline',
+	        midClick: true,
+	        callbacks: {
+	            open: function () {
+	                // Will fire when this exact popup is opened
+	                // this - is Magnific Popup object
+	                $('#table0').tablesorter({
+	                    theme: 'blue',
+	                    headerTemplate : '{content} {icon}', // Add icon for various themes
+	                    widgets: ['zebra', 'filter', 'stickyHeaders'],
+	                    widgetOptions: {
+	                        // jQuery selector or object to attach sticky header to
+	                        stickyHeaders_attachTo: '.mfp-wrap',
+	                        stickyHeaders_offset: 0,
+	                        // caption set by demo button value
+	                        stickyHeaders_includeCaption: includeCaption
+	                    }
+	                });
+	            }
+	        }
+	    });
+
+	    $('#table1, .nested, #table3').tablesorter({
+	        widthFixed : true,
+	        showProcessing: true,
+	        headerTemplate : '{content} {icon}', // Add icon for various themes
+
+	        widgets: [ 'zebra', 'stickyHeaders', 'filter' ],
+
+	        widgetOptions: {
+
+	            // extra class name added to the sticky header row
+	            stickyHeaders : '',
+	            // number or jquery selector targeting the position:fixed element
+	            stickyHeaders_offset : 0,
+	            // added to table ID, if it exists
+	            stickyHeaders_cloneId : '-sticky',
+	            // trigger "resize" event on headers
+	            stickyHeaders_addResizeEvent : true,
+	            // if false and a caption exist, it won't be included in the sticky header
+	            stickyHeaders_includeCaption : true,
+	            // The zIndex of the stickyHeaders, allows the user to adjust this to their needs
+	            stickyHeaders_zIndex : 2,
+	            // jQuery selector or object to attach sticky header to
+	            stickyHeaders_attachTo : null,
+	            // jQuery selector or object to monitor horizontal scroll position (defaults: xScroll > attachTo > window)
+	            stickyHeaders_xScroll : null,
+	            // jQuery selector or object to monitor vertical scroll position (defaults: yScroll > attachTo > window)
+	            stickyHeaders_yScroll : null,
+
+	            // scroll table top into view after filtering
+	            stickyHeaders_filteredToTop: true
+
+	            // *** REMOVED jQuery UI theme due to adding an accordion on this demo page ***
+	            // adding zebra striping, using content and default styles - the ui css removes the background from default
+	            // even and odd class names included for this demo to allow switching themes
+	            // , zebra   : ["ui-widget-content even", "ui-state-default odd"]
+	            // use uitheme widget to apply defauly jquery ui (jui) class names
+	            // see the uitheme demo for more details on how to change the class names
+	            // , uitheme : 'jui'
+	        }
+	    });
+
+	});
+	</script>
+	<script>
+	$(function() {
+
+	    window.includeCaption = true;
+	    $('.caption').on('click', function(){
+	        includeCaption = !includeCaption;
+	        $(this).html( '' + includeCaption );
+	        $('#table0, #table1, #table2, #table3, .nested').each(function(){
+	            if (this.config) {
+	                this.config.widgetOptions.stickyHeaders_includeCaption = includeCaption;
+	                this.config.widgetOptions.$sticky.children('caption').toggle(includeCaption);
+	            }
+	        });
+	    });
+
+	    // removed jQuery UI theme because of the accordion!
+	    $('link.theme').each(function(){ this.disabled = true; });
+
+	    var themes = 'blue default green grey ice black-ice dark dropbox metro-dark',
+	        i, o = '', t = themes.split(' ');
+	    for (i = 0; i < t.length; i++) {
+	        o += '<option value="' + t[i] + '">' + t[i] + '</option>';
+	    }
+
+	    $('select:first')
+	        .append(o)
+	        .change(function(){
+	            var theme = $(this).val().toLowerCase(),
+	                // ui-theme is added by the themeswitcher
+	                files = $('link.theme').each(function(){
+	                    this.disabled = true;
+	                })
+	            files.filter('.' + theme).each(function(){
+	                this.disabled = false;
+	            });
+	            $('table')
+	                .removeClass('tablesorter-' + t.join(' tablesorter-'))
+	                .addClass('tablesorter-' + (theme === 'black-ice' ? 'blackice' : theme) );
+	        }).change();
+
+	    $('input[type="checkbox"]').click(function() {
+	        var index = $(this).attr('name').substr(3);
+	        index--;
+	        $('table tr').each(function() { 
+	            $('td:eq(' + index + ')',this).toggle();
+	        });
+	        $('th.' + $(this).attr('name')).toggle();
+	    });
+
+	});
+	</script>
+	<script type="text/javascript">
+		window.onscroll = function() {scrollFunction()};
+
+		function scrollFunction() {
+    		if (document.body.scrollTop > 30 || document.documentElement.scrollTop > 30) {
+        		document.getElementById("Top").style.display = "block";
+    		} else {
+        		document.getElementById("Top").style.display = "none";
+    		}
+		}
+
+		// When the user clicks on the button, scroll to the top of the document
+		function topFunction() {
+    		document.body.scrollTop = 0; // For Chrome, Safari and Opera 
+    		document.documentElement.scrollTop = 0; // For IE and Firefox
+		}
+	</script>
+	<script type="text/javascript">
+		function clearData() {
+			$("#table1 tbody tr").remove();	
+			$("#fileinput")[0].value = '';			
+		}
+	</script>
 	</head>
 	<body>
 
@@ -23,17 +222,14 @@
 	        <h3><a href="#">Log Uploader</a></h3>
 	        <div>
 	            <h4>Please upload your log file. It can be either compressed GZ file or JSON file.</h4>
-	        	<form action="http://www.cs.tut.fi/cgi-bin/run/~jkorpela/echo.cgi"
-					enctype="multipart/form-data" method="post">
 					<p>
 						Please specify a file, or a set of files:</h3></br>
 						<input type="file" id="fileinput" accept="application/json">
 					</p>
 					<p>
 						Clear existing logs:</h3></br>
-						<input type="button" value="Clear" onclick="clearData('table1')">
+						<input type="button" value="Clear" onclick="clearData()">
 					</p>
-		</form>
 	        </div>
 	    </div>
 	    </br>
@@ -66,10 +262,11 @@
 	            <th  class="col7" data-placeholder="filter">Invoked By</th>
 	            <th  class="col8" data-placeholder="filter">Request Parameters</th>
 	            <th  class="col9" filter-false sorter-false">Response Elements</th>
-	        </thead>
+				</tr>
+	     </thead>
 	    
 	    <tbody>
-	
+				
 		</tbody>
 	    </table>
 	</div>
@@ -77,17 +274,18 @@
 		function readSingleFile(evt) {
 			//Retrieve the first (and only!) File from the FileList object
 	        var f = evt.target.files[0]; 
-
+			var fileName = f.name;
+			$('#myFileName').html(fileName);
 		    if (f) {
 			    var r = new FileReader();
 			    r.onload = function(e) { 
 			        var contents = e.target.result;
 		            var cloudtrail_data = JSON.parse(String(contents));
-		            var table = document.getElementById("table1");
+		            var tableRef = document.getElementById("table1").getElementsByTagName('tbody')[0];
 		            //document.getElementById('area').value=  cloudtrail_data.Records;
 		            //document.write((cloudtrail_data.Records).length);
 		            for(i = 0; i<(cloudtrail_data.Records).length; i++){
-		            	var row = table.insertRow(i+2);
+		            	var row   = tableRef.insertRow(tableRef.rows.length);
 		            	var cell1 = row.insertCell(0); cell1.innerHTML = String((cloudtrail_data.Records)[i].eventTime).substring(0,19);
 		            	var cell2 = row.insertCell(1); cell2.innerHTML = String((cloudtrail_data.Records)[i].eventName);
 		            	var cell3 = row.insertCell(2); cell3.innerHTML = String((cloudtrail_data.Records)[i].eventSource);
@@ -98,26 +296,17 @@
 		            	var cell8 = row.insertCell(7); cell8.innerHTML = JSON.stringify(((cloudtrail_data.Records)[i].requestParameters));
 		            	var cell9 = row.insertCell(8); cell9.innerHTML = JSON.stringify(((cloudtrail_data.Records)[i].responseElements));
 		            }
+					$('#table1').trigger('update');
 		        }
 		        r.readAsText(f);
-
 			} else { 
 			        alert("Failed to load file");
 			    }
 			}
-
 		document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
+
 	</script>
-	<script type="text/javascript">
-		function clearData(tableID) {
-			var table = document.getElementById(tableID);
-			//document.write(table.rows.length);
-			for(i = table.rows.length; i<2;i--){
-				console.log(i);
-				table.deleteRow(i-1);
-			}
-		}
-		//document.getElementById("clearTable").addEventListner("click", clear,false);
-	</script>
+	<button style="display: none;position: fixed;bottom: 0px;right: 35px;z-index: 99;border: none;outline: none;background-color: #8cb3d9;color: white;cursor: pointer;padding: 15px;border-radius: 10px;" onclick="topFunction()" id="Top" title="Go to top">Top</button>
+	
 	</body>
 	</html>
