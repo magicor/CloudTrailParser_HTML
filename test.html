@@ -140,7 +140,8 @@
 	        }
 	    });
 
-	});</script>
+	});
+	</script>
 	<script>
 	$(function() {
 
@@ -219,7 +220,7 @@
 					</p>
 					<p>
 						Clear existing logs:</h3></br>
-						<input type="button" value="Clear" onclick="clearData('table1')">
+						<input type="button" value="Clear" onclick="clearData()">
 					</p>
 		</form>
 	        </div>
@@ -254,10 +255,11 @@
 	            <th  class="col7" data-placeholder="filter">Invoked By</th>
 	            <th  class="col8" data-placeholder="filter">Request Parameters</th>
 	            <th  class="col9" filter-false sorter-false">Response Elements</th>
-	        </thead>
+				</tr>
+	     </thead>
 	    
 	    <tbody>
-	
+				
 		</tbody>
 	    </table>
 	</div>
@@ -265,7 +267,8 @@
 		function readSingleFile(evt) {
 			//Retrieve the first (and only!) File from the FileList object
 	        var f = evt.target.files[0]; 
-
+			var fileName = f.name;
+			$('#myFileName').html(fileName);
 		    if (f) {
 			    var r = new FileReader();
 			    r.onload = function(e) { 
@@ -286,23 +289,20 @@
 		            	var cell8 = row.insertCell(7); cell8.innerHTML = JSON.stringify(((cloudtrail_data.Records)[i].requestParameters));
 		            	var cell9 = row.insertCell(8); cell9.innerHTML = JSON.stringify(((cloudtrail_data.Records)[i].responseElements));
 		            }
+					$('#table1').trigger('update');
 		        }
 		        r.readAsText(f);
-
 			} else { 
 			        alert("Failed to load file");
 			    }
 			}
-
 		document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
+
 	</script>
 	<script type="text/javascript">
-		function clearData(tableID) {
-			var table = document.getElementById(tableID);
-			//document.write(table.rows.length);
-			for(i = table.rows.length; i<2;i--){
-				table.deleteRow(i-1);
-			}
+		function clearData() {
+			$("#table1 tbody tr").remove();	
+			$("#fileinput")[0].value = '';			
 		}
 		//document.getElementById("clearTable").addEventListner("click", clear,false);
 	</script>
